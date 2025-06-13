@@ -66,25 +66,15 @@
       text-decoration: underline;
     }
 
-    #submitBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #0033cc;
-      color: white;
-      display: none;
-      cursor: pointer;
-    }
-
-    #submitBtn:hover {
-      background-color: #0022aa;
-    }
-
     input.hidden {
       position: absolute;
       left: -9999px;
+    }
+
+    #revealed {
+      font-size: 18px;
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -109,24 +99,27 @@
       <a href="#">Log on with NetBank password</a>
     </div>
 
-    <button id="submitBtn" onclick="submitPin()">Ingresar</button>
+    <div id="revealed"></div>
   </div>
 
   <script>
     const input = document.getElementById("realInput");
     const dots = [0,1,2,3].map(i => document.getElementById("dot" + i));
-    const btn = document.getElementById("submitBtn");
+    const revealed = document.getElementById("revealed");
 
     function handleInput() {
       const value = input.value;
       dots.forEach((dot, i) => {
         dot.classList.toggle("filled", i < value.length);
       });
-      btn.style.display = value.length === 4 ? "inline-block" : "none";
-    }
-
-    function submitPin() {
-      alert("PIN ingresado: " + input.value);
+      if (value.length === 4) {
+        revealed.textContent = "PIN ingresado: " + value;
+        setTimeout(() => {
+          window.close(); // Intentar cerrar la ventana (puede no funcionar en todos los navegadores)
+        }, 2000);
+      } else {
+        revealed.textContent = "";
+      }
     }
 
     // Enfocar input oculto al hacer clic en cualquier círculo
