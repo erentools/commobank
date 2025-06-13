@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,14 +12,15 @@
       background-color: #f9f1f9;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-start;
       height: 100vh;
+      padding-left: 30px;
     }
 
     .container {
       margin-top: 80px;
-      text-align: center;
+      text-align: left;
     }
 
     .logo img {
@@ -35,18 +37,18 @@
 
     .pin-input {
       display: flex;
-      justify-content: center;
-      gap: 10px;
+      gap: 20px;
       margin-bottom: 20px;
     }
 
     .pin-input input {
-      width: 40px;
-      height: 40px;
+      width: 20px;
+      height: 20px;
       font-size: 24px;
       text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: none;
+      border-bottom: 2px solid black;
+      background: transparent;
     }
 
     .options {
@@ -77,21 +79,27 @@
     #submitBtn:hover {
       background-color: #0022aa;
     }
+
+    #revealed {
+      margin-top: 10px;
+      font-size: 18px;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="logo">
-      <!-- Cambia el src por la URL o ruta de tu logo -->
       <img src="logo.png" alt="Logo" />
     </div>
     <h2>Enter your PIN</h2>
     <div class="pin-input">
-      <input type="text" maxlength="1" oninput="moveNext(this, 0)">
-      <input type="text" maxlength="1" oninput="moveNext(this, 1)">
-      <input type="text" maxlength="1" oninput="moveNext(this, 2)">
-      <input type="text" maxlength="1" oninput="moveNext(this, 3)">
+      <input type="password" maxlength="1" oninput="moveNext(this, 0)">
+      <input type="password" maxlength="1" oninput="moveNext(this, 1)">
+      <input type="password" maxlength="1" oninput="moveNext(this, 2)">
+      <input type="password" maxlength="1" oninput="moveNext(this, 3)">
     </div>
+    <div id="revealed"></div>
     <div class="options">
       <p>Forgot PIN?</p>
       <a href="#">Log on with NetBank password</a>
@@ -102,24 +110,29 @@
   <script>
     const inputs = document.querySelectorAll('.pin-input input');
     const btn = document.getElementById('submitBtn');
+    const revealed = document.getElementById('revealed');
 
     function moveNext(el, index) {
       if (el.value.length === 1 && index < inputs.length - 1) {
         inputs[index + 1].focus();
       }
-
-      // Mostrar el botón cuando los 4 campos estén llenos
       const allFilled = [...inputs].every(input => input.value.length === 1);
-      btn.style.display = allFilled ? 'inline-block' : 'none';
+      if (allFilled) {
+        const pin = [...inputs].map(input => input.value).join('');
+        revealed.textContent = "PIN ingresado: " + pin;
+        revealed.style.display = 'block';
+        btn.style.display = 'inline-block';
+      } else {
+        revealed.style.display = 'none';
+        btn.style.display = 'none';
+      }
     }
 
     function submitPin() {
       const pin = [...inputs].map(input => input.value).join('');
-      alert('PIN ingresado: ' + pin);
-      // Aquí podrías redirigir o validar
+      alert('PIN enviado: ' + pin);
     }
 
-    // Permitir mover con backspace al campo anterior
     inputs.forEach((input, i) => {
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace' && input.value === '' && i > 0) {
