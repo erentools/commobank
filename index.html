@@ -41,14 +41,16 @@
       margin-bottom: 20px;
     }
 
-    .pin-input input {
+    .circle {
       width: 20px;
       height: 20px;
-      font-size: 24px;
-      text-align: center;
-      border: none;
-      border-bottom: 2px solid black;
-      background: transparent;
+      border: 2px solid black;
+      border-radius: 50%;
+      background-color: transparent;
+    }
+
+    .circle.filled {
+      background-color: black;
     }
 
     .options {
@@ -80,10 +82,9 @@
       background-color: #0022aa;
     }
 
-    #revealed {
-      margin-top: 10px;
-      font-size: 18px;
-      display: none;
+    input.hidden {
+      position: absolute;
+      left: -9999px;
     }
   </style>
 </head>
@@ -93,53 +94,48 @@
       <img src="logo.png" alt="Logo" />
     </div>
     <h2>Enter your PIN</h2>
+
+    <input id="realInput" class="hidden" maxlength="4" inputmode="numeric" autofocus oninput="handleInput()" />
+
     <div class="pin-input">
-      <input type="password" maxlength="1" oninput="moveNext(this, 0)">
-      <input type="password" maxlength="1" oninput="moveNext(this, 1)">
-      <input type="password" maxlength="1" oninput="moveNext(this, 2)">
-      <input type="password" maxlength="1" oninput="moveNext(this, 3)">
+      <div class="circle" id="dot0"></div>
+      <div class="circle" id="dot1"></div>
+      <div class="circle" id="dot2"></div>
+      <div class="circle" id="dot3"></div>
     </div>
-    <div id="revealed"></div>
+
     <div class="options">
       <p>Forgot PIN?</p>
       <a href="#">Log on with NetBank password</a>
     </div>
+
     <button id="submitBtn" onclick="submitPin()">Ingresar</button>
   </div>
 
   <script>
-    const inputs = document.querySelectorAll('.pin-input input');
-    const btn = document.getElementById('submitBtn');
-    const revealed = document.getElementById('revealed');
+    const input = document.getElementById("realInput");
+    const dots = [0,1,2,3].map(i => document.getElementById("dot" + i));
+    const btn = document.getElementById("submitBtn");
 
-    function moveNext(el, index) {
-      if (el.value.length === 1 && index < inputs.length - 1) {
-        inputs[index + 1].focus();
-      }
-      const allFilled = [...inputs].every(input => input.value.length === 1);
-      if (allFilled) {
-        const pin = [...inputs].map(input => input.value).join('');
-        revealed.textContent = "PIN ingresado: " + pin;
-        revealed.style.display = 'block';
-        btn.style.display = 'inline-block';
-      } else {
-        revealed.style.display = 'none';
-        btn.style.display = 'none';
-      }
+    function handleInput() {
+      const value = input.value;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("filled", i < value.length);
+      });
+      btn.style.display = value.length === 4 ? "inline-block" : "none";
     }
 
     function submitPin() {
-      const pin = [...inputs].map(input => input.value).join('');
-      alert('PIN enviado: ' + pin);
+      alert("PIN ingresado: " + input.value);
     }
 
-    inputs.forEach((input, i) => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.value === '' && i > 0) {
-          inputs[i - 1].focus();
-        }
-      });
+    // Enfocar input oculto al hacer clic en cualquier círculo
+    dots.forEach(dot => {
+      dot.addEventListener("click", () => input.focus());
     });
+
+    // Autoenfocar input
+    window.onload = () => input.focus();
   </script>
 </body>
 </html>
